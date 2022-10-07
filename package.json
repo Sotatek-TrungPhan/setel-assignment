@@ -3,6 +3,9 @@
     "husky": "^8.0.1"
   },
   "scripts": {
-    "pre-commit": "husky install"
+    "pre-commit": "husky install",
+    "start:order": "cd ./orders && yarn && yarn start:prod",
+    "start:payment": "cd ./payment && yarn && yarn start:prod",
+    "start:client": "cd ./client && yarn && yarn start"
   }
 }
