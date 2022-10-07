@@ -1,5 +1,5 @@
 # order-payment-microservices
-An example project demonstrating event sourcing and Command Query Responsibility Segregation (CQRS) using a couple of _NestJS_ microservices with an _React_ frontend app.
+An example project using a couple of _NestJS_ microservices with an _React_ frontend app.
 _Redis_ is used as a read database and also acts as the message broker for the pub/sub communication between the microservices. 
 All the events are persisted into a _PostgreSQL_ database.
 
