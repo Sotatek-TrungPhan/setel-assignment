@@ -26,6 +26,14 @@ const CreateOrder: React.FC<ICreateOrder> = ({
           >
             Submit
           </Button>
+          <Button
+            form="create-order"
+            key="submit"
+            htmlType="submit"
+            onClick={() => closeModal()}
+          >
+            Close
+          </Button>
         </>,
       ]}
     >

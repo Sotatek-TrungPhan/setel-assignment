@@ -58,9 +58,7 @@ function App() {
     orderService.cancelOrderById(id);
   };
 
-  const viewDetails = (id: string) => {
-    console.log(id);
-  };
+  const viewDetails = (id: string) => {};
 
   return (
     <>
