@@ -42,8 +42,18 @@ Copy the file _.env.example_ and set each environment variable accordingly.
 $ cp .env.example .env
 ```
 ### move to root dir setel-assignment
+
+### Start order services
 ```
- $yarn start:order  ### start order services
- $yarn start:payment ### start payment services
- $yarn start:client ### start client website
+$ yarn start:order 
+```
+
+### Start payment services
+```
+$yarn start:payment 
+```
+
+### Start client website
+```
+ $yarn start:client
 ```
