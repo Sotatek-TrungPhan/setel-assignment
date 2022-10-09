@@ -8,16 +8,18 @@ import 'reflect-metadata';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configServices: ConfigService) => ({
-        type: 'postgres',
-        host: configServices.get('DB_HOST'),
-        port: configServices.get('DB_PORT'),
-        username: configServices.get('DB_USERNAME'),
-        password: configServices.get('DB_PASSWORD'),
-        database: configServices.get('DATABASE'),
-        autoLoadEntities: true,
-        synchronize: true,
-      }),
+      useFactory: (configServices: ConfigService) => {
+        return {
+          type: 'postgres',
+          host: configServices.get('DB_HOST'),
+          port: configServices.get('DB_PORT'),
+          username: configServices.get('DB_USERNAME'),
+          password: configServices.get('DB_PASSWORD'),
+          database: configServices.get('DATABASE'),
+          autoLoadEntities: true,
+          synchronize: true,
+        };
+      },
     }),
   ],
 })
