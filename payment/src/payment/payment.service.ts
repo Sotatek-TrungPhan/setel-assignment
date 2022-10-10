@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ClientProxy,
   ClientProxyFactory,
@@ -19,12 +20,13 @@ export class PaymentService {
   constructor(
     @InjectRepository(Payment)
     private paymentRepository: Repository<Payment>,
+    private configService: ConfigService,
   ) {
     this.clientProxy = ClientProxyFactory.create({
       transport: Transport.REDIS,
       options: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
+        host: this.configService.get('REDIS_HOST'),
+        port: parseInt(this.configService.get('REDIS_PORT')),
       },
     });
   }
@@ -42,7 +44,7 @@ export class PaymentService {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(this.paymentRepository.save(payment));
-      }, parseInt(process.env.DELIVERY_TIMEOUT));
+      }, parseInt(this.configService.get('DELIVERY_TIMEOUT')));
     });
   }
 

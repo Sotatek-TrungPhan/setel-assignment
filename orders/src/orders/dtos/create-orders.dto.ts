@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OrderPayload } from './order-payload.dto';
-
+import { IsNotEmptyObject } from 'class-validator';
 export class CreateOrderDto {
-  @ApiProperty() readonly payload: OrderPayload;
+  @IsNotEmptyObject()
+  @ApiProperty()
+  readonly payload: OrderPayload;
 }

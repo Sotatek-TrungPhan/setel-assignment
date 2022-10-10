@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import {
   ClientProxy,
   ClientProxyFactory,
@@ -8,28 +9,29 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EVENT_EMIT } from 'common/const/event-emit';
 import { OrderStatus } from 'common/enum/order-status.enum';
 import { EventsGateway } from 'events/events.gateway';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateOrderDto } from './dtos/create-orders.dto';
 import { UpdateOrderDto } from './dtos/update-orders.dto';
 import { Orders } from './entities/orders.entity';
 
-const DELIVERY_TIMEOUT = process.env.DELIVERY_TIMEOUT || '5000';
-
 @Injectable()
 export class OrdersServices {
   private clientProxy: ClientProxy;
+  public DELIVERY_TIMEOUT: number;
   constructor(
     @InjectRepository(Orders)
     private orderRepository: Repository<Orders>,
     private eventGateway: EventsGateway,
+    private configService: ConfigService,
   ) {
     this.clientProxy = ClientProxyFactory.create({
       transport: Transport.REDIS,
       options: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT),
+        host: configService.get<string>('REDIS_HOST'),
+        port: parseInt(configService.get('REDIS_PORT')),
       },
     });
+    this.DELIVERY_TIMEOUT = configService.get('DELIVERY_TIMEOUT');
   }
 
   async updateById(
@@ -59,12 +61,17 @@ export class OrdersServices {
     return this.orderRepository.find();
   }
 
+  async getStatusById(id: string): Promise<Orders> {
+    return this.orderRepository.findOne({ where: { id: id } });
+  }
+
   async cancelById(id: string): Promise<Orders> {
     const order = await this.orderRepository.findOne({
       where: {
         id: id,
       },
     });
+
     if (order && order.state !== OrderStatus.DELIVERED)
       await this.orderRepository
         .createQueryBuilder()
@@ -114,7 +121,7 @@ export class OrdersServices {
           this.eventGateway.updateStatus(
             await this.orderRepository.findOne({ where: { id: id } }),
           );
-        }, Number(DELIVERY_TIMEOUT));
+        }, Number(this.DELIVERY_TIMEOUT));
       } else {
         resolve(order);
       }

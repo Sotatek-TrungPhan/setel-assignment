@@ -22,8 +22,8 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const orders = await orderService.getAllOrders();
-      setOrders(orders.data);
+      const { data } = await orderService.getAllOrders();
+      setOrders(data);
     })();
   }, []);
 
@@ -39,7 +39,7 @@ function App() {
             order.id === data.id ? { ...data } : order
           )
         );
-        setStateOrder(Object.assign({}, { id: data.id, state: data.state }));
+        setStateOrder({ id: data.id, state: data.state });
       }
     });
   }, [orders, socket]);

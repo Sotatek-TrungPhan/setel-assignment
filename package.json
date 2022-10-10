@@ -6,6 +6,8 @@
     "pre-commit": "husky install",
     "start:order": "cd ./orders && yarn && yarn start:prod",
     "start:payment": "cd ./payment && yarn && yarn start:prod",
+    "start:order-dev": "cd ./orders && yarn && yarn start:dev",
+    "start:payment-dev": "cd ./payment && yarn && yarn start:dev",
     "start:client": "cd ./client && yarn && yarn start"
   }
 }

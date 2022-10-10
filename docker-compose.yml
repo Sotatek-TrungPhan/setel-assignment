@@ -12,7 +12,7 @@ services:
     networks:
       - microservices-network
 
-  order:
+  orders:
     build:
       context: ./orders
       dockerfile: Dockerfile
@@ -20,15 +20,15 @@ services:
     restart: always
     ports:
       - 3001:3001
-    environment:
-      - DB_HOST=localhost
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=admin
-      #SET DEFAULT ORDER
-      - DATABASE=orders-management
-    # env-file:
-    #   - .env
+    # environment:
+    #   - DB_HOST=192.168.65.0
+    #   - DB_PORT=5432
+    #   - DB_USERNAME=postgres
+    #   - DB_PASSWORD=postgres
+    #   #SET DEFAULT ORDER
+    #   - DATABASE=orders-management
+    env_file:
+      - ./orders/.env
     networks:
       - microservices-network
 
@@ -40,14 +40,14 @@ services:
     restart: always
     ports:
       - 3002:3002
-    environment:
-      - DB_HOST=localhost
-      - DB_PORT=5432
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=admin
-      - DATABASE=payment-management
-    # env-file:
-    #   - .env
+    # environment:
+    #   - DB_HOST=192.168.65.0
+    #   - DB_PORT=5432
+    #   - DB_USERNAME=postgres
+    #   - DB_PASSWORD=postgres
+    #   - DATABASE=payment-management
+    env_file:
+      - ./payment/.env
     networks:
       - microservices-network
 
@@ -56,20 +56,23 @@ services:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: postgres
+      # POSTGRES_MULTIPLE_DATABASES: orders-management, payment-management
       POSTGRES_DB: orders-management
       PGDATA: /data/postgres
-    # env-file:
+    # env_file:
     #   - .env
     volumes:
+      # - ./initial-database.sh:/docker-entrypoint-initdb.d/initial-database.sh
       - postgres_data:/data/postgres
-      - ./payment/src/database/payment-database-init.sh:/docker-entrypoint-initdb.d/payment-database-init.sh
+      - ./orders/src/database/orders-database-init.sh:/docker-entrypoint-initdb.d/orders-database-init.sh
+      # - ./payment/src/database/payment-database-init.sh:/docker-entrypoint-initdb.d/payment-database-init.sh      
     ports:
-      - 5432:5432
+      - "5432:5432"
     restart: unless-stopped
     networks:
       - microservices-network
-
+    tty: true
   redis:
     image: redis:alpine
     hostname: redis

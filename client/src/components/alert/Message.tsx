@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { OrderStates } from '../../util/enum/OrderStates';
 import classes from './Message.module.scss';
 interface IMessage {
@@ -14,19 +14,6 @@ const MESSAGE_MAPPING: Record<string, string> = {
 };
 
 export const Message: React.FC<IMessage> = ({ state }) => {
-  console.log('🚀 ~ file: Message.tsx ~ line 17 ~ state', state);
-  // const [open, setOpen] = useState(false);
-  // const closeMessage = () => {
-  //   setOpen(true);
-  //   setTimeout(() => {
-  //     setOpen(false);
-  //   }, 4000);
-  // };
-
-  // useEffect(() => {
-  //   closeMessage();
-  // }, [state]);
-
   const showMessage = useCallback((state: string) => {
     switch (state) {
       case OrderStates.CANCELLED:
