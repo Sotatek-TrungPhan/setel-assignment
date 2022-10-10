@@ -1,6 +1,6 @@
-import { EVENT_EMIT } from 'common/const/event-emit';
+import { EVENT_EMIT } from '../common/const/event-emit';
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Orders } from 'orders/entities/orders.entity';
+import { Orders } from '../orders/entities/orders.entity';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({

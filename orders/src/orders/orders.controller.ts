@@ -18,9 +18,9 @@ import {
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
-import { OrderStatus } from 'common/enum/order-status.enum';
-import { IPayment } from 'common/interface/payment.interface';
-import { EVENT_EMIT } from './../common/const/event-emit';
+import { OrderStatus } from '../common/enum/order-status.enum';
+import { IPayment } from '../common/interface/payment.interface';
+import { EVENT_EMIT } from '../common/const/event-emit';
 
 import { CreateOrderDto } from './dtos/create-orders.dto';
 import { ResponseOrderDto } from './dtos/response-order.dto';
@@ -99,7 +99,7 @@ export class OrdersController {
         'Bad request. Order Id must be required',
       );
     }
-    const res = await this.orderService.cancelById(id);
+    const res = await this.orderService.getById(id);
     if (!res) {
       throw new NotFoundException(404, 'Not found');
     }

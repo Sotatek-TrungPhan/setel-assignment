@@ -1,5 +1,5 @@
-import { BaseEntity } from 'common/entity/base.entity';
-import { OrderStatus } from 'common/enum/order-status.enum';
+import { BaseEntity } from '../../common/entity/base.entity';
+import { OrderStatus } from '../../common/enum/order-status.enum';
 import { Column, Entity } from 'typeorm';
 
 @Entity()

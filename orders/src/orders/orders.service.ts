@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ClientProxy,
@@ -6,10 +6,10 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EVENT_EMIT } from 'common/const/event-emit';
-import { OrderStatus } from 'common/enum/order-status.enum';
-import { EventsGateway } from 'events/events.gateway';
+import { EventsGateway } from '../events/events.gateway';
 import { Repository } from 'typeorm';
+import { EVENT_EMIT } from '../common/const/event-emit';
+import { OrderStatus } from '../common/enum/order-status.enum';
 import { CreateOrderDto } from './dtos/create-orders.dto';
 import { UpdateOrderDto } from './dtos/update-orders.dto';
 import { Orders } from './entities/orders.entity';
