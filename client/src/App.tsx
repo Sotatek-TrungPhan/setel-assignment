@@ -9,23 +9,31 @@ import * as orderService from './services/order-service/order-service';
 import { Order, OrderPayload, Orders } from './types/order.type';
 import { EVENT_EMIT } from './util/const/event-emit';
 import CreateOrder from './components/modal/CreateModal';
+import { useAppDispatch } from './hooks/app-dispatch';
+import {
+  createOrder,
+  fetchAllOrder,
+  setDataOrder,
+} from './redux/slices/order.slice';
+import { useAppSelector } from './hooks/app-selector';
 function App() {
-  const [orders, setOrders] = useState<Orders>([]);
+  // const [orders, setOrders] = useState<Orders>([]);
+  const orders = useAppSelector((state) => state.orderReducer);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [stateOrder, setStateOrder] = useState<Record<string, string>>({
     id: '',
     state: '',
   });
+
+  const dispatch = useAppDispatch();
+
   const socket = io(
     `ws://${process.env.REACT_APP_SOCKET_HOST}:${process.env.REACT_APP_SOCKET_PORT}`
   );
 
   useEffect(() => {
-    (async () => {
-      const { data } = await orderService.getAllOrders();
-      setOrders(data);
-    })();
-  }, []);
+    dispatch(fetchAllOrder());
+  }, [dispatch]);
 
   useEffect(() => {
     setStateOrder({ id: '', state: '' });
@@ -34,31 +42,23 @@ function App() {
   useEffect(() => {
     socket.on(EVENT_EMIT.UPDATE_STATUS, (data: Order) => {
       if (data) {
-        setOrders(
-          orders?.map((order: Order) =>
-            order.id === data.id ? { ...data } : order
-          )
-        );
+        dispatch(setDataOrder(data));
         setStateOrder({ id: data.id, state: data.state });
       }
     });
-  }, [orders, socket]);
+  }, [orders, socket, dispatch]);
 
   const openForm = () => {
     setIsOpenModal(!isOpenModal);
   };
 
   const handleSubmit = (value: OrderPayload) => {
-    orderService
-      .createOrder({ ...value })
-      .then((res: AxiosResponse) => setOrders([...orders, res.data]));
+    dispatch(createOrder(value));
   };
 
   const cancelOrder = (id: string) => {
     orderService.cancelOrderById(id);
   };
-
-  const viewDetails = (id: string) => {};
 
   return (
     <>
@@ -66,11 +66,7 @@ function App() {
         Create an order
       </Button>
       <MainLayout>
-        <OrderTable
-          data={orders}
-          handleCancelOrder={cancelOrder}
-          viewOrderDetails={viewDetails}
-        />
+        <OrderTable data={orders} handleCancelOrder={cancelOrder} />
         <Message state={stateOrder} />
       </MainLayout>
       <CreateOrder

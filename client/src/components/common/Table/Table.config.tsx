@@ -1,11 +1,11 @@
 import { Button, Space, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { Link } from 'react-router-dom';
 import { Order } from '../../../types/order.type';
 import { OrderStates } from '../../../util/enum/OrderStates';
 
 export const COLUMNS = (
-  handleCancelOrder: (id: string) => void,
-  viewOrderDetails: (id: string) => void
+  handleCancelOrder: (id: string) => void
 ): ColumnsType<any> => {
   return [
     {
@@ -82,9 +82,7 @@ export const COLUMNS = (
             >
               Cancel order
             </Button>
-            <Button type="link" onClick={() => viewOrderDetails(record.id)}>
-              View details
-            </Button>
+            <Link to={`/order/${record.id}`}>View details</Link>
           </Space>
         );
       },
