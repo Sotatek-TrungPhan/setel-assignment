@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, Min, IsEmail } from 'class-validator';
+import { IsEmail, IsNumber, IsString, Min } from 'class-validator';
 export class OrderPayload {
   @IsString()
   @ApiProperty({ example: 'Donal Trump' })
