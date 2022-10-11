@@ -1,17 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { EventsModule } from 'events/events.module';
+import { EventsModule } from './events/events.module';
 import { DatabaseModule } from './database/database.module';
 import { OrdersModule } from './orders/orders.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `${
-        process.env.NODE_ENV === 'product' ? '.env' : '.dev.env'
-      }`,
+      envFilePath: '.env',
     }),
     EventsModule,
     ClientsModule.register([

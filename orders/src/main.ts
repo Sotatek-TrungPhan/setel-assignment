@@ -4,11 +4,13 @@ import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { RedisIoAdapter } from 'adapter/redis.adapter';
+import { HttpExceptionFilter } from 'filter/http-exception.filter';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes();
   app.setGlobalPrefix('api/v1');
   app.enableCors({
@@ -31,7 +33,7 @@ async function bootstrap() {
       port: parseInt(configService.get('REDIS_PORT')),
     },
   });
-  const redisIoAdapter = new RedisIoAdapter(app);
+  const redisIoAdapter = new RedisIoAdapter(app, configService);
   await redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
   await app.startAllMicroservices();

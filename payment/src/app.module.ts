@@ -7,9 +7,7 @@ import { PaymentModule } from './payment/payment.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `${
-        process.env.NODE_ENV === 'product' ? '.env' : '.dev.env'
-      }`,
+      envFilePath: '.env',
     }),
     ClientsModule.register([
       {

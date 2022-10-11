@@ -63,16 +63,16 @@ services:
     # env_file:
     #   - .env
     volumes:
-      # - ./initial-database.sh:/docker-entrypoint-initdb.d/initial-database.sh
+      # - ./orders/src/database/order-database-init.sh:/docker-entrypoint-initdb.d/order-database-init.sh
+      # - ./payment/src/database/payment-database-init.sh:/docker-entrypoint-initdb.d/payment-database-init.sh
       - postgres_data:/data/postgres
-      - ./orders/src/database/orders-database-init.sh:/docker-entrypoint-initdb.d/orders-database-init.sh
-      # - ./payment/src/database/payment-database-init.sh:/docker-entrypoint-initdb.d/payment-database-init.sh      
     ports:
       - "5432:5432"
     restart: unless-stopped
     networks:
       - microservices-network
     tty: true
+
   redis:
     image: redis:alpine
     hostname: redis

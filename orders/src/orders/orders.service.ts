@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ClientProxy,
@@ -71,23 +71,27 @@ export class OrdersServices {
         id: id,
       },
     });
-
-    if (order && order.state !== OrderStatus.DELIVERED)
+    if (order && order.state !== OrderStatus.DELIVERED) {
       await this.orderRepository
         .createQueryBuilder()
         .update(Orders)
         .set({ state: OrderStatus.CANCELLED })
         .where('id =:id', { id: id })
         .execute();
-    //fire event to client-side
-    this.eventGateway.updateStatus(
-      await this.orderRepository.findOne({ where: { id: id } }),
-    );
+      //fire event to client-side
+      this.eventGateway.updateStatus(
+        await this.orderRepository.findOne({ where: { id: id } }),
+      );
+    } else {
+      throw new BadRequestException({ message: "Can't cancel the order" });
+    }
+
     return this.orderRepository.findOne({ where: { id: id } });
   }
 
   async confirmById(id: string): Promise<Orders> {
     const order = await this.orderRepository.findOne({ where: { id: id } });
+
     if (order.state !== OrderStatus.CANCELLED) {
       await this.orderRepository
         .createQueryBuilder()
@@ -100,8 +104,9 @@ export class OrdersServices {
         await this.orderRepository.findOne({ where: { id: id } }),
       );
       this.deliver(order.id);
+    } else {
+      return;
     }
-
     return this.orderRepository.findOne({ where: { id: id } });
   }
 

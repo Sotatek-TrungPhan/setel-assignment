@@ -80,7 +80,7 @@ describe('Order Controller', () => {
       jest
         .spyOn(orderService, 'getAll')
         .mockImplementation(() => new Promise((resolve) => resolve(orders)));
-      expect(await orderController.fetchAll()).toEqual(orders);
+      expect(await orderController.fetchAll()).toBe(orders);
     });
   });
 
@@ -105,7 +105,30 @@ describe('Order Controller', () => {
         await orderController.fetchById(
           '1cfe9810-1b9a-4128-9155-9d19a63910002',
         ),
-      ).toEqual(order);
+      ).toBe(order);
+    });
+  });
+
+  describe('Cancel order by id', () => {
+    it('should response order has been called ', async () => {
+      const order = {
+        id: '1cfe9810-1b9a-4128-9155-9d19a63910002',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        state: 'cancelled' as any,
+        payload: {
+          name: 'test',
+          email: 'test',
+          quantity: 1,
+          price: 1,
+        },
+      };
+      jest
+        .spyOn(orderService, 'cancelById')
+        .mockImplementation(() => new Promise((resolve) => resolve(order)));
+      expect(
+        await orderController.cancel('1cfe9810-1b9a-4128-9155-9d19a63910002'),
+      ).toBe(order);
     });
   });
 });
