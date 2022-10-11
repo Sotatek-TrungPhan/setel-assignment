@@ -109,7 +109,7 @@ describe('Order Controller', () => {
   });
 
   describe('Cancel order by id', () => {
-    it('Service canclled order should be called', async () => {
+    it('Service cancelled order should be called', async () => {
       const order = {
         id: '1cfe9810-1b9a-4128-9155-9d19a63910002',
         createdAt: new Date(),
