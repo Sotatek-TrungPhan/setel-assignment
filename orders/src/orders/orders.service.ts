@@ -49,7 +49,7 @@ export class OrdersServices {
       state: OrderStatus.CREATED,
     };
     const createdOrder = await this.orderRepository.save(order);
-    this.clientProxy.emit(EVENT_EMIT.CREATE_ORDER, order);
+    this.emitEvent(EVENT_EMIT.CREATE_ORDER, order);
     return createdOrder;
   }
 
@@ -92,7 +92,7 @@ export class OrdersServices {
   async confirmById(id: string): Promise<Orders> {
     const order = await this.orderRepository.findOne({ where: { id: id } });
 
-    if (order.state !== OrderStatus.CANCELLED) {
+    if (order && order.state !== OrderStatus.CANCELLED) {
       await this.orderRepository
         .createQueryBuilder()
         .update(Orders)
@@ -131,5 +131,9 @@ export class OrdersServices {
         resolve(order);
       }
     });
+  }
+
+  async emitEvent(event: string, payload: any): Promise<void> {
+    this.clientProxy.emit(event, payload);
   }
 }

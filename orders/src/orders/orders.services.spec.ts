@@ -1,16 +1,19 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { EVENT_EMIT } from '../common/const/event-emit';
 import { EventsGateway } from '../events/events.gateway';
-import { CreateOrderDto } from './dtos/create-orders.dto';
+import { UpdateOrderDto } from './dtos/update-orders.dto';
 import { Orders } from './entities/orders.entity';
-import { OrdersController } from './orders.controller';
 import { OrdersServices } from './orders.service';
 
 describe('Order Controller', () => {
-  let orderController: OrdersController;
   let orderService: OrdersServices;
-
+  let orderRepo: Repository<Orders>;
+  let eventGateway: EventsGateway;
+  let configService: ConfigService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -31,102 +34,76 @@ describe('Order Controller', () => {
           },
         }),
         ConfigModule,
+        ClientsModule.register([
+          {
+            name: 'ORDER_CREATED',
+            transport: Transport.REDIS,
+            options: {
+              host: 'localhost',
+              port: 6379,
+            },
+          },
+        ]),
         TypeOrmModule.forFeature([Orders]),
       ],
-      controllers: [OrdersController],
       providers: [OrdersServices, EventsGateway],
     }).compile();
-    orderController = module.get<OrdersController>(OrdersController);
+    configService = module.get<ConfigService>(ConfigService);
     orderService = module.get<OrdersServices>(OrdersServices);
+    orderRepo = module.get<Repository<Orders>>(getRepositoryToken(Orders));
+    eventGateway = module.get<EventsGateway>(EventsGateway);
   });
 
   describe('Create Orders', () => {
-    it('Service create order should be called ', async () => {
-      const order = {
-        id: 'test',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        state: 'create' as any,
+    it('Repository Order should be called ', async () => {
+      const repo = jest.spyOn(orderRepo, 'save');
+      const event = jest.spyOn(orderService, 'emitEvent');
+      const res = await orderService.create({
         payload: {
           name: 'test',
-          email: 'test',
+          email: 'name@test.com',
           quantity: 1,
           price: 1,
         },
-      };
-      const service = jest
-        .spyOn(orderService, 'create')
-        .mockImplementation(() => new Promise((resolve) => resolve(order)));
-      await orderController.create(new CreateOrderDto());
-      expect(service).toBeCalled();
+      });
+
+      expect(repo).toHaveBeenCalled();
+      expect(event).toHaveBeenCalledWith(EVENT_EMIT.CREATE_ORDER, res);
     });
   });
 
-  describe('Get All Orders', () => {
-    it('Service getAll order should be called ', async () => {
-      const orders = [
-        {
-          id: 'test',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          state: 'create' as any,
-          payload: {
-            name: 'test',
-            email: 'test',
-            quantity: 1,
-            price: 1,
-          },
-        },
-      ];
-      const service = jest
-        .spyOn(orderService, 'getAll')
-        .mockImplementation(() => new Promise((resolve) => resolve(orders)));
-      await orderController.fetchAll();
-      expect(service).toBeCalled();
+  describe('Update order by id', () => {
+    it('Service update order should be called', async () => {
+      const repo = jest.spyOn(orderRepo, 'update');
+      await orderService.updateById(
+        '0e0d378c-d070-4f88-a74f-c3b3a21641a5',
+        new UpdateOrderDto(),
+      );
+      expect(repo).toHaveBeenCalled();
     });
   });
 
-  describe('Get By Orders Id', () => {
-    it('Service getById should be called', async () => {
-      const order = {
-        id: '1cfe9810-1b9a-4128-9155-9d19a63910002',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        state: 'create' as any,
-        payload: {
-          name: 'test',
-          email: 'test',
-          quantity: 1,
-          price: 1,
-        },
-      };
-      const service = jest
-        .spyOn(orderService, 'getById')
-        .mockImplementation(() => new Promise((resolve) => resolve(order)));
-      await orderController.fetchById('1cfe9810-1b9a-4128-9155-9d19a63910002'),
-        expect(service).toBeCalled();
+  describe('Get order by id', () => {
+    it('Service get order should be called ', async () => {
+      const repo = jest.spyOn(orderRepo, 'findOne');
+      await orderService.getById('0e0d378c-d070-4f88-a74f-c3b3a21641a5');
+      expect(repo).toHaveBeenCalled();
     });
   });
 
-  describe('Cancel order by id', () => {
-    it('Service cancelled order should be called', async () => {
-      const order = {
-        id: '1cfe9810-1b9a-4128-9155-9d19a63910002',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        state: 'cancelled' as any,
-        payload: {
-          name: 'test',
-          email: 'test',
-          quantity: 1,
-          price: 1,
-        },
-      };
-      const service = jest
-        .spyOn(orderService, 'cancelById')
-        .mockImplementation(() => new Promise((resolve) => resolve(order)));
-      await orderController.cancel('1cfe9810-1b9a-4128-9155-9d19a63910002'),
-        expect(service).toBeCalled();
+  describe('Get all orders', () => {
+    it('Service get all orders should be called ', async () => {
+      const repo = jest.spyOn(orderRepo, 'find');
+      await orderService.getAll();
+      expect(repo).toHaveBeenCalled();
+    });
+  });
+
+  describe('Get status by order id', () => {
+    it('Service get status orders ', async () => {
+      const repo = jest.spyOn(orderRepo, 'findOne');
+      await orderService.getStatusById('0e0d378c-d070-4f88-a74f-c3b3a21641a5');
+      expect(repo).toHaveBeenCalled();
     });
   });
 });

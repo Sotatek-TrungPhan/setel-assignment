@@ -57,3 +57,17 @@ $yarn start:payment
 ```
  $yarn start:client
 ```
+
+## Build and run with Docker
+
+```
+cd ./setel-assignment
+```
+
+```
+docker compose build
+```
+
+```
+docker compose up
+```

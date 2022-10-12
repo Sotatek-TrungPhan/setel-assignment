@@ -7,7 +7,6 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  UseFilters,
 } from '@nestjs/common';
 import { EventPattern } from '@nestjs/microservices';
 import {
@@ -21,7 +20,6 @@ import {
 import { EVENT_EMIT } from '../common/const/event-emit';
 import { IPayment } from '../common/interface/payment.interface';
 
-import { HttpExceptionFilter } from '../filter/http-exception.filter';
 import { CreateOrderDto } from './dtos/create-orders.dto';
 import { ResponseOrderDto } from './dtos/response-order.dto';
 import { Orders } from './entities/orders.entity';
@@ -70,7 +68,6 @@ export class OrdersController {
   }
 
   @Get(':id')
-  @UseFilters(HttpExceptionFilter)
   @ApiOperation({ description: 'Get order by id' })
   @ApiResponse({ status: 200, type: ResponseOrderDto })
   @ApiParam({
@@ -88,15 +85,10 @@ export class OrdersController {
     description: 'Not found',
   })
   async fetchById(@Param('id', ParseUUIDPipe) id: string): Promise<Orders> {
-    const res = await this.orderService.getById(id);
-    if (!res) {
-      throw new NotFoundException(404, 'An order not found');
-    }
-    return res;
+    return this.orderService.getById(id);
   }
 
   @Get()
-  @UseFilters(HttpExceptionFilter)
   @ApiOperation({ description: 'Get all orders' })
   @ApiResponse({ status: 200, type: ResponseOrderDto, isArray: true })
   async fetchAll(): Promise<Orders[]> {

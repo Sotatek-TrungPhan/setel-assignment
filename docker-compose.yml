@@ -20,13 +20,6 @@ services:
     restart: always
     ports:
       - 3001:3001
-    # environment:
-    #   - DB_HOST=192.168.65.0
-    #   - DB_PORT=5432
-    #   - DB_USERNAME=postgres
-    #   - DB_PASSWORD=postgres
-    #   #SET DEFAULT ORDER
-    #   - DATABASE=orders-management
     env_file:
       - ./orders/.env
     networks:
@@ -40,12 +33,6 @@ services:
     restart: always
     ports:
       - 3002:3002
-    # environment:
-    #   - DB_HOST=192.168.65.0
-    #   - DB_PORT=5432
-    #   - DB_USERNAME=postgres
-    #   - DB_PASSWORD=postgres
-    #   - DATABASE=payment-management
     env_file:
       - ./payment/.env
     networks:
@@ -56,15 +43,10 @@ services:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      # POSTGRES_MULTIPLE_DATABASES: orders-management, payment-management
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: orders-management
       PGDATA: /data/postgres
-    # env_file:
-    #   - .env
     volumes:
-      # - ./orders/src/database/order-database-init.sh:/docker-entrypoint-initdb.d/order-database-init.sh
-      # - ./payment/src/database/payment-database-init.sh:/docker-entrypoint-initdb.d/payment-database-init.sh
       - postgres_data:/data/postgres
     ports:
       - "5432:5432"
