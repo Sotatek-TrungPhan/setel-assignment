@@ -4,7 +4,7 @@ import { IsNotEmptyObject, ValidateNested } from 'class-validator';
 import { OrderPayload } from './order-payload.dto';
 export class CreateOrderDto {
   @IsNotEmptyObject()
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => OrderPayload)
   @ApiProperty()
   readonly payload: OrderPayload;
