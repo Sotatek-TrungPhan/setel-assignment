@@ -43,10 +43,11 @@ services:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: orders-management
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order
       PGDATA: /data/postgres
     volumes:
+      - ./payment/src/database/payment-database-init.sh:/docker-entrypoint-initdb.d/payment-database-init.sh
       - postgres_data:/data/postgres
     ports:
       - "5432:5432"

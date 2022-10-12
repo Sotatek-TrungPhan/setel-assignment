@@ -7,7 +7,7 @@ interface IMessage {
 }
 
 const MESSAGE_MAPPING: Record<string, string> = {
-  deliveried: 'An order has been deliveried!',
+  delivered: 'An order has been deliveried!',
   confirmed: 'An order has been confirmed!',
   created: 'An order has been created!',
   cancelled: 'An order has been cancelled!',
@@ -25,7 +25,7 @@ export const Message: React.FC<IMessage> = ({ state }) => {
       case OrderStates.CONFIRMED:
         message.success(MESSAGE_MAPPING[state], 3);
         break;
-      case OrderStates.DELIVERIED:
+      case OrderStates.DELIVERED:
         message.info(MESSAGE_MAPPING[state], 3);
         break;
       default:

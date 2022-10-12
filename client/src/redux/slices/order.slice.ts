@@ -17,7 +17,11 @@ export const createOrder = createAsyncThunk(
   'orders/createOrder',
   async (payload: OrderPayload) => {
     try {
-      const { data } = await orderService.createOrder({ ...payload });
+      const { data } = await orderService.createOrder({
+        ...payload,
+        price: Number(payload.price),
+        quantity: Number(payload.quantity),
+      });
       return data;
     } catch (err) {
       throw err;

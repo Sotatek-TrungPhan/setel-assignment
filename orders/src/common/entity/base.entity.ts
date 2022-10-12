@@ -1,3 +1,4 @@
+import { IsUUID } from 'class-validator';
 import {
   CreateDateColumn,
   UpdateDateColumn,
@@ -6,6 +7,7 @@ import {
 
 export abstract class BaseEntity {
   @PrimaryGeneratedColumn('uuid')
+  @IsUUID()
   public readonly id: string;
 
   @CreateDateColumn({ type: 'date' })

@@ -58,7 +58,7 @@ export const COLUMNS = (
           case OrderStates.CONFIRMED:
             color = 'success';
             break;
-          case OrderStates.DELIVERIED:
+          case OrderStates.DELIVERED:
             color = 'processing';
             break;
         }

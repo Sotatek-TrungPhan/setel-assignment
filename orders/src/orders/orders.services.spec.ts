@@ -48,7 +48,6 @@ describe('Order Controller', () => {
       ],
       providers: [OrdersServices, EventsGateway],
     }).compile();
-    configService = module.get<ConfigService>(ConfigService);
     orderService = module.get<OrdersServices>(OrdersServices);
     orderRepo = module.get<Repository<Orders>>(getRepositoryToken(Orders));
     eventGateway = module.get<EventsGateway>(EventsGateway);

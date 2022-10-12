@@ -1,24 +1,24 @@
-import { AxiosResponse } from 'axios';
+import { Button } from 'antd';
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { Message } from './components/alert/Message';
 import { OrderTable } from './components/common/Table/Table';
 import { MainLayout } from './components/layout/MainLayout/MainLayout';
-import { Button } from 'antd';
-import * as orderService from './services/order-service/order-service';
-import { Order, OrderPayload, Orders } from './types/order.type';
-import { EVENT_EMIT } from './util/const/event-emit';
 import CreateOrder from './components/modal/CreateModal';
 import { useAppDispatch } from './hooks/app-dispatch';
+import { useAppSelector } from './hooks/app-selector';
 import {
   createOrder,
   fetchAllOrder,
   setDataOrder,
 } from './redux/slices/order.slice';
-import { useAppSelector } from './hooks/app-selector';
+import * as orderService from './services/order-service/order-service';
+import { Order, OrderPayload } from './types/order.type';
+import { EVENT_EMIT } from './util/const/event-emit';
 function App() {
   // const [orders, setOrders] = useState<Orders>([]);
   const orders = useAppSelector((state) => state.orderReducer);
+  const [orderList, setOrderList] = useState(orders);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [stateOrder, setStateOrder] = useState<Record<string, string>>({
     id: '',
@@ -32,12 +32,16 @@ function App() {
   );
 
   useEffect(() => {
+    setOrderList(orders);
+  }, [orders]);
+
+  useEffect(() => {
     dispatch(fetchAllOrder());
   }, [dispatch]);
 
   useEffect(() => {
     setStateOrder({ id: '', state: '' });
-  }, [orders]);
+  }, [orderList]);
 
   useEffect(() => {
     socket.on(EVENT_EMIT.UPDATE_STATUS, (data: Order) => {
