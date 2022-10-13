@@ -6,12 +6,11 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EventsGateway } from '../events/events.gateway';
 import { Repository } from 'typeorm';
 import { EVENT_EMIT } from '../common/const/event-emit';
 import { OrderStatus } from '../common/enum/order-status.enum';
+import { EventsGateway } from '../events/events.gateway';
 import { CreateOrderDto } from './dtos/create-orders.dto';
-import { UpdateOrderDto } from './dtos/update-orders.dto';
 import { Orders } from './entities/orders.entity';
 
 @Injectable()
@@ -34,14 +33,6 @@ export class OrdersServices {
     this.DELIVERY_TIMEOUT = configService.get('DELIVERY_TIMEOUT');
   }
 
-  async updateById(
-    id: string,
-    updateOrderDto: UpdateOrderDto,
-  ): Promise<Orders> {
-    await this.orderRepository.update(id, updateOrderDto);
-    return this.orderRepository.findOne({ where: { id: id } });
-  }
-
   async create(createOrderDto: CreateOrderDto): Promise<Orders> {
     const order = {
       ...new Orders(),
@@ -59,10 +50,6 @@ export class OrdersServices {
 
   async getAll(): Promise<Orders[]> {
     return this.orderRepository.find();
-  }
-
-  async getStatusById(id: string): Promise<Orders> {
-    return this.orderRepository.findOne({ where: { id: id } });
   }
 
   async cancelById(id: string): Promise<Orders> {
