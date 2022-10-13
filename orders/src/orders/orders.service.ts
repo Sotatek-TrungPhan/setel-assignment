@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ExceptionFilter,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   ClientProxy,
@@ -32,6 +37,17 @@ export class OrdersServices {
     });
     this.DELIVERY_TIMEOUT = configService.get('DELIVERY_TIMEOUT');
   }
+  private async findOneOrFail(id: string): Promise<Orders> {
+    try {
+      const res = await this.orderRepository.findOne({ where: { id: id } });
+      if (!res) {
+        throw new NotFoundException('Order is not found');
+      }
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  }
 
   async create(createOrderDto: CreateOrderDto): Promise<Orders> {
     const order = {
@@ -45,7 +61,8 @@ export class OrdersServices {
   }
 
   async getById(id: string): Promise<Orders> {
-    return this.orderRepository.findOne({ where: { id: id } });
+    const res = await this.findOneOrFail(id);
+    return res;
   }
 
   async getAll(): Promise<Orders[]> {
@@ -53,11 +70,7 @@ export class OrdersServices {
   }
 
   async cancelById(id: string): Promise<Orders> {
-    const order = await this.orderRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
+    const order = await this.findOneOrFail(id);
     if (order && order.state !== OrderStatus.DELIVERED) {
       await this.orderRepository
         .createQueryBuilder()
@@ -66,9 +79,7 @@ export class OrdersServices {
         .where('id =:id', { id: id })
         .execute();
       //fire event to client-side
-      this.eventGateway.updateStatus(
-        await this.orderRepository.findOne({ where: { id: id } }),
-      );
+      this.eventGateway.updateStatus(await this.findOneOrFail(id));
     } else {
       throw new BadRequestException({ message: "Can't cancel the order" });
     }
@@ -77,7 +88,7 @@ export class OrdersServices {
   }
 
   async confirmById(id: string): Promise<Orders> {
-    const order = await this.orderRepository.findOne({ where: { id: id } });
+    const order = await this.findOneOrFail(id);
 
     if (order && order.state !== OrderStatus.CANCELLED) {
       await this.orderRepository
@@ -87,9 +98,7 @@ export class OrdersServices {
         .where('id =:id', { id: id })
         .execute();
       //fire event to client-side
-      this.eventGateway.updateStatus(
-        await this.orderRepository.findOne({ where: { id: id } }),
-      );
+      this.eventGateway.updateStatus(await this.findOneOrFail(id));
       this.deliver(order.id);
     } else {
       return;
