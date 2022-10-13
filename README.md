@@ -31,7 +31,6 @@ All the events are persisted into a _PostgreSQL_ database.
   2. view the details of an order
   3. create an order
   4. cancel an order
-- Login requires a _Gmail_ account for auth (Not implement in yet)
 - Implements socket listening message from server
 
 ## How to run?
