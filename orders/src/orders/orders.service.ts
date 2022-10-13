@@ -38,15 +38,11 @@ export class OrdersServices {
     this.DELIVERY_TIMEOUT = configService.get('DELIVERY_TIMEOUT');
   }
   private async findOneOrFail(id: string): Promise<Orders> {
-    try {
-      const res = await this.orderRepository.findOne({ where: { id: id } });
-      if (!res) {
-        throw new NotFoundException('Order is not found');
-      }
-      return res;
-    } catch (err) {
-      throw err;
+    const res = await this.orderRepository.findOne({ where: { id: id } });
+    if (!res) {
+      throw new NotFoundException('Order is not found');
     }
+    return res;
   }
 
   async create(createOrderDto: CreateOrderDto): Promise<Orders> {

@@ -1,21 +1,30 @@
-###################
-# BUILD FOR LOCAL DEVELOPMENT
-###################
-FROM node:16-alpine As development
+FROM node:16-alpine AS development
 
-# Set working directory
 WORKDIR /usr/src/app
 
-# Install and cache app dependencies development
-COPY --chown=node:node package.json ./
-COPY --chown=node:node yarn.lock ./
+COPY package*.json ./
 
-# Install yarn
-RUN yarn
+RUN npm install glob rimraf
 
-# Copy existing application directory contents
-COPY --chown=node:node . .
+RUN npm install --only=dev
 
-USER node
+COPY . .
 
-CMD ["yarn", "start:prod"]
+RUN npm run build
+
+FROM node:16-alpine as production
+
+ARG NODE_ENV=prod
+ENV NODE_ENV=${NODE_ENV}
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=prod
+
+COPY . .
+
+COPY --from=development /usr/src/app/dist ./dist
+
+CMD ["node", "dist/main"]
