@@ -7,6 +7,8 @@ services:
       context: ./client
       dockerfile: Dockerfile
     container_name: microservices-client
+    env_file: 
+      - ./client/.env
     ports:
       - 3000:3000
     networks:
