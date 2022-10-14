@@ -53,11 +53,9 @@ function App() {
 
   const openForm = () => {
     setIsOpenModal(!isOpenModal);
-    console.log('close model')
   };
 
   const handleSubmit = (value: OrderPayload) => {
-    console.log('submit')
     dispatch(createOrder(value));
   };
 
