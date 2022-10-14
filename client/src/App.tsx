@@ -16,7 +16,6 @@ import * as orderService from './services/order-service/order-service';
 import { Order, OrderPayload } from './types/order.type';
 import { EVENT_EMIT } from './util/const/event-emit';
 function App() {
-  // const [orders, setOrders] = useState<Orders>([]);
   const orders = useAppSelector((state) => state.orderReducer);
   const [orderList, setOrderList] = useState(orders);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -54,9 +53,11 @@ function App() {
 
   const openForm = () => {
     setIsOpenModal(!isOpenModal);
+    console.log('close model')
   };
 
   const handleSubmit = (value: OrderPayload) => {
+    console.log('submit')
     dispatch(createOrder(value));
   };
 

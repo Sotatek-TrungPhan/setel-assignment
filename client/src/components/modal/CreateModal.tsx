@@ -22,23 +22,18 @@ const CreateOrder: React.FC<ICreateOrder> = ({
             form="create-order"
             key="submit"
             htmlType="submit"
-            onClick={() => closeModal()}
+            onClick={closeModal}
           >
             Submit
           </Button>
-          <Button
-            form="create-order"
-            key="submit"
-            htmlType="submit"
-            onClick={() => closeModal()}
-          >
+          <Button form="create-order" htmlType="reset" onClick={closeModal}>
             Close
           </Button>
         </>,
       ]}
     >
       <Form onFinish={handleSubmit} name="create-order">
-        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="Name" rules={[{ required: true}]}>
           <Input />
         </Form.Item>
         <Form.Item name="email" label="Email" rules={[{ required: true }]}>
