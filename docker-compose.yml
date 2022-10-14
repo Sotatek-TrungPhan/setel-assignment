@@ -37,6 +37,8 @@ services:
       - ./payment/.env
     networks:
       - microservices-network
+    depends_on:
+      - postgres
 
   postgres:
     container_name: microservices-postgres
